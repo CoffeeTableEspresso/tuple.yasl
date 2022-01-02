@@ -1,4 +1,4 @@
-const tuple = __require_c__('toml')
+const tuple = __require_c__('tuple')
 
 export tuple
 
