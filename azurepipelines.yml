@@ -30,5 +30,8 @@ jobs:
       )
     displayName: "Install YASL"
   - script:
+      make
+    displayName: "Compile"
+  - script:
       ./tests.sh
     displayName: "Run Tests"
