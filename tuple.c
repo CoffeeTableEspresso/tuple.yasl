@@ -108,6 +108,13 @@ static int YASL_tuple_tostr(struct YASL_State *S) {
 }
 
 static int YASL_tuple_tolist(struct YASL_State *S) {
+	struct YASL_Tuple *tuple = YASLX_checktuple(S, "tuple.tolist", 0);
+
+	YASL_pushlist(S);
+	for (size_t i = 0; i < tuple->len; i++) {
+		vm_push((struct VM *)S, tuple->items[i]);
+		YASL_listpush(S);
+	}
 	return 1;
 }
 

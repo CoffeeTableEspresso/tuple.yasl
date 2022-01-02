@@ -1,0 +1,6 @@
+tuple(1, true, false)
+tuple(true, false, 1)
+tuple(true, false)
+tuple(true, false)
+tuple()
+
