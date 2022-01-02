@@ -1,0 +1,3 @@
+[submodule "yasl"]
+	path = yasl
+	url = https://github.com/yasl-lang/yasl
