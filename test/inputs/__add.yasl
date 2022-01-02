@@ -1,0 +1,11 @@
+const tuple = requie('tuple')
+
+const a = tuple(1)
+const b = tuple(true, false)
+
+echo a + b
+echo b + a
+echo a + a
+echo b + tuple()
+echo tuple() + b
+echo tuple() + tuple()
