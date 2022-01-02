@@ -1,0 +1,4 @@
+const tuple = require("tuple")
+
+echo tuple(undef, 1, 2.3, .str)
+
