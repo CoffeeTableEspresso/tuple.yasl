@@ -1,4 +1,4 @@
-const tuple = __require_c__('libtuple.so')
+const tuple = __require_c__('toml')
 
 export tuple
 
