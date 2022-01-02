@@ -1,1 +1,1 @@
-tuple(undef, 1, 2.3, .str)
+tuple(undef, 1, 2.3, str, true)
