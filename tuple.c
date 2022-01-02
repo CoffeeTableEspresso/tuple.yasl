@@ -80,6 +80,10 @@ static int YASL_tuple_tostr(struct YASL_State *S) {
 	strcpy(buffer, "tuple(");
 	buffer_count += strlen("tuple(");
 	size_t tuple_len = tuple->len;
+	if (tuple_len == 0) {
+		YASL_pushlit(S, "tuple()");
+		return 1;
+	}
 	for (size_t i = 0; i < tuple_len; i++) {
 		vm_push((struct VM *)S, tuple->items[i]);
 		vm_stringify_top((struct VM *)S);

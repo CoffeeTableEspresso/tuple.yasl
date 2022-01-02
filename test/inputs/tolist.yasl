@@ -1,0 +1,5 @@
+const tuple = require('tuple')
+
+echo tuple(1, 2, 3)->tolist()
+echo tuple()->tolist()
+

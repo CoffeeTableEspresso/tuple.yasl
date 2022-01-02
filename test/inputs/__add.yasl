@@ -1,4 +1,4 @@
-const tuple = requie('tuple')
+const tuple = require('tuple')
 
 const a = tuple(1)
 const b = tuple(true, false)

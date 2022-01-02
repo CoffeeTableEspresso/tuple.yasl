@@ -1,0 +1,5 @@
+const tuple = require('tuple')
+
+echo len tuple()
+echo len tuple(false, false, false)
+
