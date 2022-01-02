@@ -121,6 +121,9 @@ static int YASL_tuple_tolist(struct YASL_State *S) {
 static int YASL_tuple_spread(struct YASL_State *S) {
 	struct YASL_Tuple *tuple = YASLX_checktuple(S, "tuple.spread", 0);
 
+	for (size_t i = 0; i < tuple->len; i++) {
+		vm_push((struct VM *)S, tuple->items[i]);
+	}
 	return tuple->len;
 }
 

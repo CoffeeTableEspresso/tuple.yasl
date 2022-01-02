@@ -1,0 +1,11 @@
+const tuple = require('tuple')
+const list = collections.list
+
+const a = tuple(.a, .b, .c, .d)
+
+echo tuple(a->spread())
+echo list(a->spread())
+
+echo tuple(tuple()->spread())
+echo list(tuple()->spread())
+
