@@ -36,6 +36,7 @@ jobs:
       set -e
       sudo mkdir -p /usr/local/lib/yasl/
       sudo mv libtuple.so /usr/local/lib/yasl/
+      sudo mv tuple.yasl /usr/local/lib/yasl/
     displayName: "Install"
   - script:
       ./tests.sh
