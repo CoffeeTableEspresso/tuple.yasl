@@ -1,0 +1,12 @@
+const tuple = require('tuple')
+
+const t = tuple(.a, .b, .c, .d)
+
+for e <- t {
+	echo e
+}
+
+for e <- tuple() {
+	echo e
+}
+
