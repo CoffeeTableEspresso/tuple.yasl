@@ -20,7 +20,7 @@ jobs:
     displayName: "Install Valgrind"
   - script: |
       set -e
-      git clone --single-branch --branch v0.11.8 https://github.com/yasl-lang/yasl/
+      git clone --single-branch --branch v0.11.10 https://github.com/yasl-lang/yasl/
       (
         cd yasl
         cmake .
