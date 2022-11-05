@@ -64,7 +64,7 @@ static int YASL_tuple___get(struct YASL_State *S) {
 	struct YASL_Tuple *tuple = YASLX_checkntuple(S, "tuple.__get", 0);
 	yasl_int n = YASLX_checknint(S, "tuple.__get", 1);
 
-	if (n < 0 || n >= tuple->len) {
+	if (n < 0 || (size_t)n >= tuple->len) {
 		YASL_print_err(S, "ValueError: unable to index tuple of length %ld with index %ld.", tuple->len, n);
 		YASL_throw_err(S, YASL_VALUE_ERROR);
 	}
@@ -177,7 +177,7 @@ static int YASL_tuple___next(struct YASL_State *S) {
 	struct YASL_Tuple *tuple = YASLX_checkntuple(S, "tuple.__next", 0);
 	yasl_int curr = YASLX_checknint(S, "tuple.__next", 1);
 
-	if (curr >= tuple->len || curr < 0) {
+	if ((size_t)curr >= tuple->len || curr < 0) {
 		YASL_pushbool(S, false);
 		return 1;
 	}
