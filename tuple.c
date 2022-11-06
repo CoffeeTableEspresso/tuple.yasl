@@ -13,6 +13,7 @@ struct YASL_Tuple {
 };
 
 void tuple_free(struct YASL_State *S, struct YASL_Tuple *tuple) {
+    (void) S;
 	for (size_t i = 0; i < tuple->len; i++) {
 		dec_ref(tuple->items + i);
 	}
