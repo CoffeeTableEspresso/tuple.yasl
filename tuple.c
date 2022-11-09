@@ -31,12 +31,16 @@ static void YASL_pushtuple(struct YASL_State *S, struct YASL_Tuple *tuple) {
 	YASL_setmt(S);
 }
 
+static bool YASL_istuple(struct YASL_State *S) {
+    return YASL_isuserdata(S, TUPLE_NAME);
+}
+
 static int YASL_tuple_new(struct YASL_State *S) {
 	yasl_int len = YASL_peekvargscount(S);
 	struct YASL_Tuple *tuple = tuple_alloc(len);
 	while (len-- > 0) {
 		if (!YASL_isbool(S) && !YASL_isfloat(S) && !YASL_isint(S) &&
-		    !YASL_isstr(S) && !YASL_isundef(S)) {
+		    !YASL_isstr(S) && !YASL_isundef(S) && !YASL_istuple(S)) {
 			YASL_print_err(S, "TypeError: Tuples may only contain immutable values.");
 			YASL_throw_err(S, YASL_TYPE_ERROR);
 		}
