@@ -116,6 +116,12 @@ static int YASL_tuple_flatten(struct YASL_State *S) {
     return 1;
 }
 
+static int YASL_tuple_copy(struct YASL_State *S) {
+	(void)YASLX_checkntuple(S, "tuple.tostr", 0);
+
+    return 1;
+}
+
 static int YASL_tuple_tostr(struct YASL_State *S) {
 	struct YASL_Tuple *tuple = YASLX_checkntuple(S, "tuple.tostr", 0);
 	size_t buffer_size = 8;
@@ -255,6 +261,11 @@ int YASL_load_dyn_lib(struct YASL_State *S) {
 	YASL_loadmt(S, TUPLE_PRE);
 	YASL_pushlit(S, "flatten");
 	YASL_pushcfunction(S, YASL_tuple_flatten, 1);
+	YASL_tableset(S);
+
+	YASL_loadmt(S, TUPLE_PRE);
+	YASL_pushlit(S, "copy");
+	YASL_pushcfunction(S, YASL_tuple_copy, 1);
 	YASL_tableset(S);
 
 	YASL_loadmt(S, TUPLE_PRE);
