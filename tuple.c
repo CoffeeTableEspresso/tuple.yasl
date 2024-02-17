@@ -32,12 +32,16 @@ static void YASL_pushtuple(struct YASL_State *S, struct YASL_Tuple *tuple) {
 	YASL_setmt(S);
 }
 
+static bool YASL_istuple(struct YASL_State *S) {
+	return YASL_isuserdata(S, TUPLE_NAME);
+}
+
 static int YASL_tuple_new(struct YASL_State *S) {
 	yasl_int len = YASL_peekvargscount(S);
 	struct YASL_Tuple *tuple = tuple_alloc(len);
 	while (len-- > 0) {
 		if (!YASL_isbool(S) && !YASL_isfloat(S) && !YASL_isint(S) &&
-		    !YASL_isstr(S) && !YASL_isundef(S)) {
+		    !YASL_isstr(S) && !YASL_isundef(S) && !YASL_istuple(S)) {
 			YASL_print_err(S, "TypeError: Tuples may only contain immutable values.");
 			YASL_throw_err(S, YASL_TYPE_ERROR);
 		}
@@ -74,21 +78,73 @@ static int YASL_tuple___get(struct YASL_State *S) {
 	return 1;
 }
 
+static void tuple_flatten_helper(struct YASL_Tuple *dest, size_t *dest_len, struct YASL_Tuple *src) {
+	for (size_t i = 0; i < src->len; i++) {
+		if (src->items[i].type == Y_USERDATA) {
+		struct YASL_Tuple *t = (struct YASL_Tuple *)src->items[i].value.uval->data;
+		tuple_flatten_helper(dest, dest_len, t);
+		} else {
+		dest->items[(*dest_len)++] = src->items[i];
+		}
+	}
+}
+
+static size_t flattened_size(struct YASL_Tuple *tuple) {
+	size_t count = 0;
+	for (size_t i = 0; i < tuple->len; i++) {
+		struct YASL_Object *obj = tuple->items + i;
+		if (obj->type == Y_USERDATA) {
+		count += flattened_size(obj->value.uval->data);
+		} else {
+		count++;
+		}
+	}
+	return count;
+}
+
+static int YASL_tuple_flatten(struct YASL_State *S) {
+	struct YASL_Tuple *tuple = YASLX_checkntuple(S, "tuple.flatten", 0);
+
+	struct YASL_Tuple *dest = tuple_alloc(flattened_size(tuple));
+	size_t len = 0;
+	tuple_flatten_helper(dest, &len, tuple);
+
+	for (size_t i = 0; i < dest->len; i++) {
+		inc_ref(dest->items + i);
+	}
+
+	YASL_pushtuple(S, dest);
+	return 1;
+}
+
+static int YASL_tuple_copy(struct YASL_State *S) {
+	(void)YASLX_checkntuple(S, "tuple.copy", 0);
+
+	return 1;
+}
+
+
+void vm_stringify_top_format(struct VM *, struct YASL_Object *);
+
 static int YASL_tuple_tostr(struct YASL_State *S) {
 	struct YASL_Tuple *tuple = YASLX_checkntuple(S, "tuple.tostr", 0);
+	struct YASL_Object *format = vm_peek_p((struct VM *)S);
+
+	const size_t tuple_len = tuple->len;
+	if (tuple_len == 0) {
+		YASL_pushlit(S, "tuple()");
+		return 1;
+	}
+
 	size_t buffer_size = 8;
 	size_t buffer_count = 0;
 	char *buffer = malloc(buffer_size);
 	strcpy(buffer, "tuple(");
 	buffer_count += strlen("tuple(");
-	size_t tuple_len = tuple->len;
-	if (tuple_len == 0) {
-		YASL_pushlit(S, "tuple()");
-		return 1;
-	}
+
 	for (size_t i = 0; i < tuple_len; i++) {
 		vm_push((struct VM *)S, tuple->items[i]);
-		vm_stringify_top((struct VM *)S);
+		vm_stringify_top_format((struct VM *)S, format);
 		const char *s = YASL_popcstr(S);
 		size_t s_len = strlen(s);
 		if (buffer_count + s_len + 2 >= buffer_size) {
@@ -200,45 +256,22 @@ int YASL_load_dyn_lib(struct YASL_State *S) {
 	YASL_pushtable(S);
 	YASL_registermt(S, TUPLE_PRE);
 
-	YASL_loadmt(S, TUPLE_PRE);
-	YASL_pushlit(S, "__get");
-	YASL_pushcfunction(S, YASL_tuple___get, 2);
-	YASL_tableset(S);
+	struct YASLX_function functions[] = {
+		{ "__get", YASL_tuple___get, 2 },
+		{ "__len", YASL_tuple___len, 1 },
+		{ "flatten", YASL_tuple_flatten, 1 },
+		{ "copy", YASL_tuple_copy, 1 },
+		{ "tostr", YASL_tuple_tostr, 2 },
+		{ "tolist", YASL_tuple_tolist, 1 },
+		{ "__eq", YASL_tuple___eq, 2 },
+		{ "__add", YASL_tuple___add, 2 },
+		{ "__iter", YASL_tuple___iter, 1 },
+		{ "spread", YASL_tuple_spread, 1 },
+		{ NULL, NULL, 0 }
+	};
 
 	YASL_loadmt(S, TUPLE_PRE);
-	YASL_pushlit(S, "__len");
-	YASL_pushcfunction(S, YASL_tuple___len, 1);
-	YASL_tableset(S);
-
-	YASL_loadmt(S, TUPLE_PRE);
-	YASL_pushlit(S, "tostr");
-	YASL_pushcfunction(S, YASL_tuple_tostr, 1);
-	YASL_tableset(S);
-
-	YASL_loadmt(S, TUPLE_PRE);
-	YASL_pushlit(S, "tolist");
-	YASL_pushcfunction(S, YASL_tuple_tolist, 1);
-	YASL_tableset(S);
-
-	YASL_loadmt(S, TUPLE_PRE);
-	YASL_pushlit(S, "__eq");
-	YASL_pushcfunction(S, YASL_tuple___eq, 2);
-	YASL_tableset(S);
-
-	YASL_loadmt(S, TUPLE_PRE);
-	YASL_pushlit(S, "__add");
-	YASL_pushcfunction(S, YASL_tuple___add, 2);
-	YASL_tableset(S);
-
-	YASL_loadmt(S, TUPLE_PRE);
-	YASL_pushlit(S, "__iter");
-	YASL_pushcfunction(S, YASL_tuple___iter, 1);
-	YASL_tableset(S);
-
-	YASL_loadmt(S, TUPLE_PRE);
-	YASL_pushlit(S, "spread");
-	YASL_pushcfunction(S, YASL_tuple_spread, 1);
-	YASL_tableset(S);
+	YASLX_tablesetfunctions(S, functions);
 
 	YASL_pushcfunction(S, YASL_tuple_new, -1);
 
