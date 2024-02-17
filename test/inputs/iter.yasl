@@ -2,11 +2,11 @@ const tuple = require('tuple')
 
 const t = tuple(.a, .b, .c, .d)
 
-for e <- t {
+for e in t {
 	echo e
 }
 
-for e <- tuple() {
+for e in tuple() {
 	echo e
 }
 
