@@ -1,11 +1,11 @@
 name = "tuple"
 authors = [ "CoffeeTableEspresso <coffeetableespresso@gmail.com>" ]
-version = "v0.1.0"
+version = "v0.1.2"
 license = "MIT"
 
 [build]
 sources = [ "tuple.c" ]
 scripts = [ "tuple.yasl" ]
-includes = [ "yasl", "yasl/interpreter", "yasl/util" ]
+includes = [ "yasl", "yasl/src/interpreter", "yasl/src/data-structures", "yasl/src/util" ]
 
 [deps]
