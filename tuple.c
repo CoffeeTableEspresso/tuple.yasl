@@ -1,7 +1,7 @@
 #include <yasl/yasl.h>
 #include <yasl/yasl_aux.h>
-#include "yasl/interpreter/YASL_Object.h"
-#include "yasl/interpreter/VM.h"
+#include "yasl/src/interpreter/YASL_Object.h"
+#include "yasl/src/interpreter/VM.h"
 
 #define TUPLE_PRE "tuple"
 
