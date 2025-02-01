@@ -6,6 +6,6 @@ license = "MIT"
 [build]
 sources = [ "tuple.c" ]
 scripts = [ "tuple.yasl" ]
-includes = [ "yasl/src", "yasl/src/interpreter", "yasl/src/data-structures", "yasl/src/util" ]
+includes = [ "yasl/src", "yasl/src/common", "yasl/src/interpreter", "yasl/src/data-structures", "yasl/src/util" ]
 
 [deps]
